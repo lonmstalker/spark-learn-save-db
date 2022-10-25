@@ -1,5 +1,6 @@
 app:
   filePath: "hdfs://localhost:9000/data/*.csv"
+  startType: "WRITE"
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver

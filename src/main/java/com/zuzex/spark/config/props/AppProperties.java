@@ -9,4 +9,5 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
     private String filePath;
+    private StartType startType;
 }
