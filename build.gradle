@@ -49,13 +49,15 @@ dependencies {
     implementation("org.apache.spark:spark-core_${project.ext.scalaVersion}:${project.ext.sparkVersion}") {
         exclude group: "org.slf4j", module: "slf4j-log4j12"
     }
+    implementation("org.apache.spark:spark-sql-kafka-0-10_${project.ext.scalaVersion}:${project.ext.sparkVersion}") {
+        exclude group: "org.slf4j", module: "slf4j-log4j12"
+    }
 
     implementation("com.vladmihalcea:hibernate-types-55:2.20.0")
     implementation("org.liquibase:liquibase-core:4.17.0")
 
     implementation "org.postgresql:postgresql:42.5.0"
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.7.5")
-
 
     implementation group: 'commons-io', name: 'commons-io', version: '2.5'
 

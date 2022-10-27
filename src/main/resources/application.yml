@@ -1,6 +1,10 @@
 app:
   filePath: "hdfs://localhost:9000/data/*.csv"
-  startType: "WRITE"
+  startType: "READ_KAFKA"
+  kafka-topics:
+    - "event"
+  kafka-servers:
+    - "localhost:9092"
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver

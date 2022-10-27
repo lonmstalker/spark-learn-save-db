@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  spark-master:
+    container_name: "spark-master"
+    image: bitnami/spark:latest
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    volumes:
+      - /spark/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+    ports:
+      - "7077:7077"
+  hadoop:
+    container_name: "hadoop"
+    build:
+      context: .
+      dockerfile: Dockerfile.hadoop
+    volumes:
+      - ./data:/hadoop/data
+    environment:
+      - USER=hadoop
+    ports:
+      - "8021:8021"
+      - "9000:9000"
+      - "2222:22"
+      - "50070:50070"
+  postgres:
+    container_name: postgres
+    image: postgres:14.0-alpine
+    volumes:
+      - /postgres:docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_DB: "event"
+      POSTGRES_USER: "event"
+      POSTGRES_PASSWORD: "event"
+    ports:
+      - "5432:5432"
+  debezium:
+    container_name: debezium
+    image: debezium/connect:latest
+    depends_on: postgres
+    volumes:
+      - ${PWD}/scripts:/scripts
+    environment:
+      - BOOTSTRAP_SERVERS=localhost:9092
+      - GROUP_ID=debezium
+      - CONFIG_STORAGE_TOPIC=debezium-configs
+      - OFFSET_STORAGE_TOPIC=debezium-offset
+      - STATUS_STORAGE_TOPIC=debezium-status
+      - KEY_CONVERTER=org.apache.kafka.connect.storage.StringConverter
+      - VALUE_CONVERTER=org.apache.kafka.connect.storage.StringConverter
