@@ -17,7 +17,7 @@ RUN groupadd heartbeat && useradd hadoop -G heartbeat
 
 RUN wget https://archive.apache.org/dist/hadoop/common/$HADOOP_NAME/$HADOOP_NAME.tar.gz  \
     && tar -xvzf $HADOOP_NAME.tar.gz  \
-    && mv $HADOOP_NAME /home/hadoop \
+    && mv $HADOOP_NAME hadoop \
     && rm $HADOOP_NAME.tar.gz
 
 ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk/
