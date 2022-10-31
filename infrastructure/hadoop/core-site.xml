@@ -15,9 +15,10 @@
 -->
 
 <!-- Put site-specific property overrides in this file. -->
+<!-- Change localhost if split namenode and datanode on dif containers-->
 <configuration>
   <property>
     <name>fs.default.name</name>
-    <value>hdfs://namenode:9000</value>
+    <value>hdfs://localhost:9000</value>
   </property>
 </configuration>

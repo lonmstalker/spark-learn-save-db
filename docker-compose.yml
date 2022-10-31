@@ -3,6 +3,8 @@ services:
   spark-master:
     container_name: "spark-master"
     image: bitnami/spark:latest
+    depends_on:
+      - hadoop
     environment:
       - SPARK_MODE=master
       - SPARK_MASTER_URL=spark://spark-master:7077
@@ -13,10 +15,8 @@ services:
   hadoop:
     container_name: "hadoop"
     build:
-      context: .
-      dockerfile: Dockerfile.hadoop
-    volumes:
-      - ./data:/hadoop/data
+      context: infrastructure
+      dockerfile: infrastructure/Dockerfile.hadoop
     environment:
       - USER=hadoop
     ports:
@@ -25,7 +25,7 @@ services:
       - "2222:22"
       - "50070:50070"
   postgres:
-    container_name: postgres
+    container_name: "postgres"
     image: postgres:14.0-alpine
     volumes:
       - /postgres:docker-entrypoint-initdb.d
@@ -36,9 +36,10 @@ services:
     ports:
       - "5432:5432"
   debezium:
-    container_name: debezium
+    container_name: "debezium"
     image: debezium/connect:latest
-    depends_on: postgres
+    depends_on:
+      - postgres
     volumes:
       - ${PWD}/scripts:/scripts
     environment:
@@ -49,3 +50,17 @@ services:
       - STATUS_STORAGE_TOPIC=debezium-status
       - KEY_CONVERTER=org.apache.kafka.connect.storage.StringConverter
       - VALUE_CONVERTER=org.apache.kafka.connect.storage.StringConverter
+  spark-edu:
+    container_name: "spark-edu"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - hadoop
+      - spark-master
+    environment:
+      - "POSTGRES_URL=postgres:5432"
+      - "HDFS_URL:hadoop:9000"
+    ports:
+      - "8080:8080"

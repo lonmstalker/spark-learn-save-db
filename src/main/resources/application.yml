@@ -1,5 +1,5 @@
 app:
-  filePath: "hdfs://localhost:9000/data/*.csv"
+  filePath: hdfs://${HDFS_URL:localhost:9000}/data/*.csv
   startType: "READ_KAFKA"
   kafka-topics:
     - "event"
@@ -8,14 +8,14 @@ app:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5433/postgres
-    username: postgres
-    password: 91823God
+    url: jdbc:postgresql://${POSTGRES_URL:localhost:5433}/postgres
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:91823God}
   liquibase:
     change-log: db/changelog/master.yml
-    user: postgres
-    password: 91823God
-    url: jdbc:postgresql://localhost:5433/postgres
+    user:  ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:91823God}
+    url: jdbc:postgresql://${POSTGRES_URL:localhost:5433}/postgres
 
 logging:
   level:

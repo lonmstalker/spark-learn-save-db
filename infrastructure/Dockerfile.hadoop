@@ -34,7 +34,8 @@ ENV HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
 ENV PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
 ENV HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
 
-RUN mkdir -p $HADOOP_HOME/hadoopdata/hdfs/namenode && mkdir -p  $HADOOP_HOME/hadoopdata/hdfs/datanode
+RUN mkdir -p $HADOOP_HOME/hadoopdata/hdfs/namenode  \
+    && mkdir -p  $HADOOP_HOME/hadoopdata/hdfs/datanode
 
 ADD /hadoop/*.xml /$HADOOP_HOME/etc/hadoop/
 

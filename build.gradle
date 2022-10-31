@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id 'org.springframework.boot' version '2.7.5'
+    id 'distribution'
 }
 
 ext {
@@ -7,15 +9,21 @@ ext {
     sparkVersion = '3.2.2'
 }
 
+distributions {
+    distributionBaseName = "mainDistr"
+}
 
-group 'org.example'
+bootJar {
+    archiveFileName = 'spark-edu'
+}
+
+group 'com.zuzex.spark'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'scala'
 
 repositories {
-    jcenter()
     mavenLocal()
     mavenCentral()
     maven {
@@ -54,13 +62,14 @@ dependencies {
     }
 
     implementation("com.vladmihalcea:hibernate-types-55:2.20.0")
-    implementation("org.liquibase:liquibase-core:4.17.0")
+    implementation('org.liquibase:liquibase-core:4.17.1')
 
     implementation "org.postgresql:postgresql:42.5.0"
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.7.5")
 
-    implementation group: 'commons-io', name: 'commons-io', version: '2.5'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.7'
 
     compileOnly("org.projectlombok:lombok:1.18.24")
+
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
