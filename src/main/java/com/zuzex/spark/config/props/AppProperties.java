@@ -11,6 +11,7 @@ import java.util.List;
 @ConfigurationProperties(prefix = "app")
 public class AppProperties {
     private String filePath;
+    private String debeziumUrl;
     private StartType startType;
     private List<String> kafkaTopics;
     private List<String> kafkaServers;

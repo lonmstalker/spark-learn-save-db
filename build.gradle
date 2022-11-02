@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.5'
-    id 'distribution'
+//    id 'distribution'
 }
 
 ext {
@@ -9,12 +9,15 @@ ext {
     sparkVersion = '3.2.2'
 }
 
-distributions {
-    distributionBaseName = "mainDistr"
+jar {
+    baseName("spark-edu")
+    manifest {
+        attributes 'Start-Class': 'com.zuzex.spark.Main', 'Main-Class': 'com.zuzex.spark.Main'
+    }
 }
 
 bootJar {
-    archiveFileName = 'spark-edu'
+    archiveName("spark-edu.jar")
 }
 
 group 'com.zuzex.spark'
@@ -22,6 +25,10 @@ version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'scala'
+//apply plugin: 'distribution'
+apply plugin: 'application'
+
+mainClassName = 'com.zuzex.spark.Main'
 
 repositories {
     mavenLocal()
@@ -66,6 +73,7 @@ dependencies {
 
     implementation "org.postgresql:postgresql:42.5.0"
     implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.7.5")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:2.7.5")
 
     implementation group: 'commons-io', name: 'commons-io', version: '2.7'
 

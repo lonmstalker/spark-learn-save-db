@@ -9,7 +9,7 @@ services:
       - SPARK_MODE=master
       - SPARK_MASTER_URL=spark://spark-master:7077
     volumes:
-      - /spark/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf
+      - "./infrastructure/spark/spark-defaults.conf:/opt/bitnami/spark/conf/spark-defaults.conf"
     ports:
       - "7077:7077"
   hadoop:
@@ -28,7 +28,7 @@ services:
     container_name: "postgres"
     image: postgres:14.0-alpine
     volumes:
-      - /postgres:docker-entrypoint-initdb.d
+      - "./infrastructure/postgres:docker-entrypoint-initdb.d"
     environment:
       POSTGRES_DB: "event"
       POSTGRES_USER: "event"
@@ -41,7 +41,7 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ${PWD}/scripts:/scripts
+      - "./infrastructure/debezium:/scripts"
     environment:
       - BOOTSTRAP_SERVERS=localhost:9092
       - GROUP_ID=debezium
@@ -61,6 +61,7 @@ services:
       - spark-master
     environment:
       - "POSTGRES_URL=postgres:5432"
-      - "HDFS_URL:hadoop:9000"
+      - "HDFS_URL=hadoop:9000"
+      - "DEBEZIUM_URL=debezium:8083"
     ports:
       - "8080:8080"

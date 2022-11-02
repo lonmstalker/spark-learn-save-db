@@ -5,6 +5,7 @@ app:
     - "event"
   kafka-servers:
     - "localhost:9092"
+  debezium-url: ${DEBEZIUM_URL:http://localhost:8083}/connectors
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver

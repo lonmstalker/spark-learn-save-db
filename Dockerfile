@@ -1,26 +1,15 @@
-FROM gradle:jdk11-alpine
-LABEL maintainer="nkochnev@zuzex.com"
+FROM gradle:7.5.1-jdk11-alpine AS build
 
-WORKDIR /app
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle build --no-daemon
 
-COPY gradle /app/.
-COPY src /app/.
-COPY build.gradle /app/.
-COPY settings.gradle /app/.
-COPY gradlew /app/.
-
-RUN ./gradlew installDist \
-    && jdeps--print-module-deps  \
-    --ignore-missing-deps  \
-    --recursive \
-    --multi-release 11  \
-    --class-path="./spark-edu/build/install/spark-edu/lib/*"  \
-    --module-path="./spark-edu/build/install/spark-edu/lib/*"  \
-    ./app/build/install/app/lib/app.jar
-
-ENV JAVA_HOME "/jre"
-ENV PATH $JAVA_HOME/bin:$PATH
+FROM openjdk:11-jre-slim
 
 EXPOSE 8080
 
-ENTRYPOINT ["/jre/bin/java", "-jar", "/spark-edu/spark-edu.jar"]
+RUN mkdir /app
+
+COPY --from=build /home/gradle/src/build/libs/spark-edu.jar /app/spark-edu.jar
+
+ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseCGroupMemoryLimitForHeap", "-Djava.security.egd=file:/dev/./urandom","-jar","/app/spark-edu.jar"]
