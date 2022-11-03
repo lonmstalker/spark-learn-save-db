@@ -3,6 +3,7 @@ services:
   spark-master:
     container_name: "spark-master"
     image: bitnami/spark:latest
+    restart: on-failure
     depends_on:
       - hadoop
     environment:
@@ -14,9 +15,10 @@ services:
       - "7077:7077"
   hadoop:
     container_name: "hadoop"
+    restart: on-failure
     build:
-      context: infrastructure
-      dockerfile: infrastructure/Dockerfile.hadoop
+      context: infrastructure/hadoop
+      dockerfile: Dockerfile.hadoop
     environment:
       - USER=hadoop
     ports:
@@ -26,6 +28,7 @@ services:
       - "50070:50070"
   postgres:
     container_name: "postgres"
+    restart: on-failure
     image: postgres:14.0-alpine
     volumes:
       - "./infrastructure/postgres:docker-entrypoint-initdb.d"
@@ -37,6 +40,7 @@ services:
       - "5432:5432"
   debezium:
     container_name: "debezium"
+    restart: on-failure
     image: debezium/connect:latest
     depends_on:
       - postgres
@@ -52,6 +56,7 @@ services:
       - VALUE_CONVERTER=org.apache.kafka.connect.storage.StringConverter
   spark-edu:
     container_name: "spark-edu"
+    restart: on-failure
     build:
       context: .
       dockerfile: Dockerfile

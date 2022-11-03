@@ -1,9 +1,8 @@
 FROM centos:latest as builder
 LABEL maintainer="nkochnev@zuzex.com"
 
-ARG GREENPLUM_VERSION="6.21.3"
+ENV GREENPLUM_VERSION="6.21.3"
 ARG GREENPLUM_OS="rhel7-x86_64"
-ENV MASTER_DATA_DIRECTORY "/home/greenplum/gpdata"
 
 RUN cd /etc/yum.repos.d/  \
     && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* \
@@ -26,8 +25,11 @@ RUN yum -y update  \
 
 WORKDIR /home/greenplum
 
+COPY /etc/hostfile_gpssh_segonly /home/greenplum/hostfile_gpssh_segonly
+COPY /etc/hostfile_exkeys /home/greenplum/hostfile_exkeys
+COPY /etc/gpinitsystem_config /home/greenplum/gpinitsystem_config
+COPY /etc/start-master.sh /home/greenplum/start-master.sh
+
 RUN wget https://github.com/greenplum-db/gpdb/releases/download/$GREENPLUM_VERSION/open-source-greenplum-db-${GREENPLUM_VERSION}-$GREENPLUM_OS.rpm \
     && rpm -ivh open-source-greenplum-db-${GREENPLUM_VERSION}-$GREENPLUM_OS.rpm \
     && rm -f open-source-greenplum-db-${GREENPLUM_VERSION}-$GREENPLUM_OS.rpm
-
-#ENTRYPOINT ["/bin/sh", "-c", "/usr/local/greenplum-db/greenplum_path.sh"]
