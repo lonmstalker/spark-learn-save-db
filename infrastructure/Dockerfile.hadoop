@@ -21,8 +21,7 @@ WORKDIR /home/hadoop
 RUN wget https://archive.apache.org/dist/hadoop/common/$HADOOP_NAME/$HADOOP_NAME.tar.gz  \
     && tar -zxvf $HADOOP_NAME.tar.gz -C /home/hadoop \
     && mv ${HADOOP_NAME} hadoop \
-    && rm $HADOOP_NAME.tar.gz \
-    && yum -y remove wget
+    && rm $HADOOP_NAME.tar.gz
 
 ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk/
 ENV HADOOP_HOME=/home/hadoop/hadoop

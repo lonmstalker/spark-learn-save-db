@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+  hadoop:
+    container_name: "hadoop"
+    build:
+      context: .
+      dockerfile: Dockerfile.hadoop
+    environment:
+      - USER=hadoop
+    ports:
+      - "8021:8021"
+      - "9000:9000"
+      - "2222:22"
+      - "50070:50070"
+  greenplum-master:
+    container_name: greenplum-master
+    depends_on:
+      - hadoop
+    build:
+      context: gp
+      dockerfile: Dockerfile
+    command: "mkdir /home/greenplum/.ssh && ssh-keygen -t rsa -b 4096 -N \n -f /home/greenplum/.ssh/id_rsa && sleep infinity"
+    volumes:
+      - "./gp/master:/data/master"
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
+      - "88:22"
+  greenplum-node:
+    container_name: greenplum-node
+    depends_on:
+      - hadoop
+      - greenplum-master
+    build:
+      context: gp
+      dockerfile: Dockerfile
+    command:
+      - "sleep infinity"
+    volumes:
+      - "./gp/data:/data/node"
+    environment:
+      POSTGRES_DB: "postgres"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
