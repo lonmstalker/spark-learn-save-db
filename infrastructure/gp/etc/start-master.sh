@@ -1,12 +1,8 @@
 #!/bin/sh
-mkdir /home/greenplum/.ssh \
- && ssh-keygen -t rsa -b 4096 -N \n -f /home/greenplum/.ssh/id_rsa
 
 echo "source /usr/local/greenplum-db/greenplum_path.sh" >> .bashrc
 
-. .bashrc
-
-ssh-copy-id greenplum-primary1
+ssh-copy-id -i "$PWD"/.ssh/id_rsa.pub greenplum-primary1
 ssh greenplum-primary1
 
 echo "current greenplum nodes:"

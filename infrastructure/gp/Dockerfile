@@ -33,3 +33,9 @@ COPY /etc/start-master.sh /home/greenplum/start-master.sh
 RUN wget https://github.com/greenplum-db/gpdb/releases/download/$GREENPLUM_VERSION/open-source-greenplum-db-${GREENPLUM_VERSION}-$GREENPLUM_OS.rpm \
     && rpm -ivh open-source-greenplum-db-${GREENPLUM_VERSION}-$GREENPLUM_OS.rpm \
     && rm -f open-source-greenplum-db-${GREENPLUM_VERSION}-$GREENPLUM_OS.rpm
+
+RUN mkdir /home/greenplum/.ssh \
+     && ssh-keygen -t rsa -b 4096 -N \n -f /home/greenplum/.ssh/id_rsa
+
+RUN useradd greenplum
+USER greenplum
