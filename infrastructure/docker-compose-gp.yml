@@ -4,6 +4,8 @@ services:
   hadoop:
     container_name: "hadoop"
     restart: on-failure
+    networks:
+      - gp_network
     build:
       context: hadoop
       dockerfile: hadoop/Dockerfile.hadoop
@@ -15,41 +17,58 @@ services:
       - "2222:22"
       - "50070:50070"
   greenplum-master:
-    container_name: greenplum-master
+    container_name: mdw
     restart: on-failure
+    networks:
+      - gp_network
     depends_on:
       - hadoop
+      - greenplum-primary1
     build:
       context: gp
       dockerfile: Dockerfile
-    entrypoint: [ "/bin/sh", "-c", "/home/greenplum/start-master.sh" ]
+    stdin_open: true
+    tty: true
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+      - "service ssh start && /home/root/start-master.sh"
     volumes:
-      - "./gp/master/1:/home/greenplum//data/master"
-      - "./gp/data/primary/1:/home/greenplum/data/primary"
-      - "./gp/data/mirror/1:/home/greenplum/data/mirror"
+      - "./gp/master:/home/root/data/master"
     environment:
-      MASTER_DATA_DIRECTORY: "/home/greenplum/data/master"
-      POSTGRES_DB: "postgres"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      LOG_DIRECTORY: "/home/root/log"
+      MASTER_DATA_DIRECTORY: "/home/root/data/master"
+      PGDATABASE: "postgres"
+      PGUSER: "postgres"
+      PGPASSWORD: "postgres"
     ports:
       - "5432:5432"
       - "88:22"
   greenplum-primary1:
-    container_name: greenplum-primary1
+    container_name: sdw1
     restart: on-failure
+    networks:
+      - gp_network
     depends_on:
       - hadoop
-      - greenplum-master
     build:
       context: gp
       dockerfile: Dockerfile
-    entrypoint: [ "/bin/sh", "-c", "sleep infinity" ]
+    stdin_open: true
+    tty: true
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+      - "service ssh start && /home/root/start-primary.sh"
     volumes:
-      - "./gp/master/2:/home/greenplum//data/master"
-      - "./gp/data/primary/2:/home/greenplum/data/primary"
-      - "./gp/data/mirror/2:/home/greenplum/data/mirror"
+      - "./gp/data/primary/2:/home/root/data/primary"
+      - "./gp/data/mirror/2:/home/root/data/mirror"
     environment:
-      POSTGRES_DB: "postgres"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      LOG_DIRECTORY: "/home/root/log"
+      MASTER_DATA_DIRECTORY: "/home/root/data/master"
+    ports:
+      - "22:22"
+
+networks:
+  gp_network:
+    driver: bridge

@@ -1,41 +1,35 @@
-FROM centos:latest as builder
+FROM ecpe4s/ubuntu18.04-spack:latest
 LABEL maintainer="nkochnev@zuzex.com"
 
 ENV GREENPLUM_VERSION="6.21.3"
-ARG GREENPLUM_OS="rhel7-x86_64"
+ARG GREENPLUM_OS="ubuntu18.04-amd64"
 
-RUN cd /etc/yum.repos.d/  \
-    && sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* \
-    && sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+RUN apt -y update \
+    && apt -y upgrade  \
+    && apt install -y software-properties-common \
+    && apt install -y python3 \
+    && apt install -y ufw \
+    && apt install -y openssh-server
 
-RUN yum -y update  \
-    && yum -y upgrade  \
-    && yum -y install wget \
-    && yum install -y krb5-devel \
-    && yum install -y libyaml \
-    && yum install -y apr-util \
-    && yum install -y bzip2 \
-    && yum install -y net-tools \
-    && yum install -y openssh \
-    && yum install -y openssh-clients \
-    && yum install -y openssh-server \
-    && yum install -y perl \
-    && yum install -y rsync \
-    && yum install -y zip
+WORKDIR /home/root
 
-WORKDIR /home/greenplum
+RUN wget https://github.com/greenplum-db/gpdb/releases/download/${GREENPLUM_VERSION}/greenplum-db-${GREENPLUM_VERSION}-${GREENPLUM_OS}.deb \
+    && apt install -y ./greenplum-db-${GREENPLUM_VERSION}-${GREENPLUM_OS}.deb \
+    && rm -f greenplum-db-${GREENPLUM_VERSION}-${GREENPLUM_OS}.deb
 
-COPY /etc/hostfile_gpssh_segonly /home/greenplum/hostfile_gpssh_segonly
-COPY /etc/hostfile_exkeys /home/greenplum/hostfile_exkeys
-COPY /etc/gpinitsystem_config /home/greenplum/gpinitsystem_config
-COPY /etc/start-master.sh /home/greenplum/start-master.sh
+RUN mkdir -p "$PWD"/.ssh \
+      && ssh-keygen -t rsa -b 4096 -N '123456' -f "$PWD"/.ssh/id_rsa \
+      && chmod 700 "$PWD"/.ssh/id_rsa
 
-RUN wget https://github.com/greenplum-db/gpdb/releases/download/$GREENPLUM_VERSION/open-source-greenplum-db-${GREENPLUM_VERSION}-$GREENPLUM_OS.rpm \
-    && rpm -ivh open-source-greenplum-db-${GREENPLUM_VERSION}-$GREENPLUM_OS.rpm \
-    && rm -f open-source-greenplum-db-${GREENPLUM_VERSION}-$GREENPLUM_OS.rpm
+COPY /etc/hostfile_gpssh_segonly /home/root/hostfile_gpssh_segonly
+COPY /etc/hostfile_exkeys /home/root/hostfile_exkeys
+COPY /etc/gpinitsystem_config /home/root/gpinitsystem_config
 
-RUN mkdir /home/greenplum/.ssh \
-     && ssh-keygen -t rsa -b 4096 -N \n -f /home/greenplum/.ssh/id_rsa
+COPY /sbin/start-master.sh /home/root/start-master.sh
+COPY /sbin/start-primary.sh /home/root/start-primary.sh
+COPY /sbin/start-primary.sh /home/root/default-ufw.sh
 
-RUN useradd greenplum
-USER greenplum
+COPY /etc/postgresql.conf /home/root/postgresql.conf
+COPY /etc/sshd_config /etc/ssh/sshd_config
+
+RUN chmod 777 /usr/local/greenplum-db-${GREENPLUM_VERSION}/greenplum_path.sh
