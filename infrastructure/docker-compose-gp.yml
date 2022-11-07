@@ -32,12 +32,12 @@ services:
     entrypoint:
       - "/bin/sh"
       - "-c"
-      - "service ssh start && /home/root/start-master.sh"
+      - "service ssh start && /root/start-master.sh"
     volumes:
       - "./gp/master:/home/root/data/master"
     environment:
-      LOG_DIRECTORY: "/home/root/log"
-      MASTER_DATA_DIRECTORY: "/home/root/data/master"
+      LOG_DIRECTORY: "/root/log"
+      MASTER_DATA_DIRECTORY: "/root/data/master"
       PGDATABASE: "postgres"
       PGUSER: "postgres"
       PGPASSWORD: "postgres"
@@ -59,13 +59,13 @@ services:
     entrypoint:
       - "/bin/sh"
       - "-c"
-      - "service ssh start && /home/root/start-primary.sh"
+      - "service ssh start && /root/start-primary.sh"
     volumes:
-      - "./gp/data/primary/2:/home/root/data/primary"
-      - "./gp/data/mirror/2:/home/root/data/mirror"
+      - "./gp/data/primary/2:/root/data/primary"
+      - "./gp/data/mirror/2:/root/data/mirror"
     environment:
-      LOG_DIRECTORY: "/home/root/log"
-      MASTER_DATA_DIRECTORY: "/home/root/data/master"
+      LOG_DIRECTORY: "/root/log"
+      MASTER_DATA_DIRECTORY: "/root/data/master"
     ports:
       - "22:22"
 

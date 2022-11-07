@@ -7,13 +7,13 @@ mkdir -p "$PWD"/data/master/global/pg_control
 # shellcheck source=/usr/local/greenplum-db-6.21.3/greenplum_path.sh
 . /usr/local/greenplum-db-"$GREENPLUM_VERSION"/greenplum_path.sh
 
-ssh-copy-id -i "$PWD"/.ssh/id_rsa.pub -o StrictHostKeyChecking=no sdw1
-
 echo "current greenplum nodes:" \
-  && cat "$PWD"/hostfile_exkeys
+  && cat "$PWD"/hostfile_exkeys \
 
 gpssh-exkeys -f "$PWD"/hostfile_exkeys
 
 gpssh -f "$PWD"/hostfile_exkeys -e "ls -l /usr/local/greenplum-db-$GREENPLUM_VERSION"
 
 gpinitsystem -c "$PWD"/gpinitsystem_config -h "$PWD"/hostfile_gpssh_segonly -P 88 -p "$PWD"/data/master/postgresql.conf
+
+sleep infinity
