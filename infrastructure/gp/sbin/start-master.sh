@@ -18,5 +18,3 @@ echo "current greenplum nodes:" &&
 gpssh -f "$HOME"/hostfile_exkeys -e "ls -l /usr/local/greenplum-db-$GREENPLUM_VERSION"
 
 gpinitsystem -c "$HOME"/gpinitsystem_config -h "$HOME"/hostfile_gpssh_segonly -P 88 -p "$HOME"/data/master/postgresql.conf
-
-sleep infinity
