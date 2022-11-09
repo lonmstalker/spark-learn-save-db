@@ -12,9 +12,5 @@
 
 *GREENPLUM*
 ````
-1. master. ssh-keygen -t rsa -b 4096 
-2. master. ssh-copy-id [name of node]
-3. master. ssh [name of node]
-4. master gpssh-exkeys -f hostfile_exkeys
-4. master. gpssh -f hostfile_exkeys -e ‘ls -l /usr/local/greenplum-db-6.21.3’
+1. Запустить ssh.sh на каждой ноде
 ````

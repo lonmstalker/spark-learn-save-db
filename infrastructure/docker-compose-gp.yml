@@ -24,20 +24,22 @@ services:
     depends_on:
       - hadoop
       - greenplum-primary1
+    cap_add:
+      - NET_ADMIN
     build:
       context: gp
       dockerfile: Dockerfile
+    user: "1280:1280"
     stdin_open: true
-    tty: true
     entrypoint:
       - "/bin/sh"
       - "-c"
-      - "service ssh start && /root/start-master.sh"
+      - "./sbin/start-master.sh"
     volumes:
-      - "./gp/master:/home/root/data/master"
+      - "./gp/master:/home/gpadmin/data/master"
     environment:
-      LOG_DIRECTORY: "/root/log"
-      MASTER_DATA_DIRECTORY: "/root/data/master"
+      LOG_DIRECTORY: "./log"
+      MASTER_DATA_DIRECTORY: "./data/master"
       PGDATABASE: "postgres"
       PGUSER: "postgres"
       PGPASSWORD: "postgres"
@@ -51,21 +53,23 @@ services:
       - gp_network
     depends_on:
       - hadoop
+    cap_add:
+      - NET_ADMIN
     build:
       context: gp
       dockerfile: Dockerfile
+    user: "1280:1280"
     stdin_open: true
-    tty: true
     entrypoint:
       - "/bin/sh"
       - "-c"
-      - "service ssh start && /root/start-primary.sh"
+      - "./sbin/start-primary.sh"
     volumes:
-      - "./gp/data/primary/2:/root/data/primary"
-      - "./gp/data/mirror/2:/root/data/mirror"
+      - "./gp/data/primary/2:/home/gpadmin/data/primary"
+      - "./gp/data/mirror/2:/home/gpadmin/data/mirror"
     environment:
-      LOG_DIRECTORY: "/root/log"
-      MASTER_DATA_DIRECTORY: "/root/data/master"
+      LOG_DIRECTORY: "./log"
+      MASTER_DATA_DIRECTORY: "./data/master"
     ports:
       - "22:22"
 
