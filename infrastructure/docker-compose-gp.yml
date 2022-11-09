@@ -21,20 +21,17 @@ services:
     restart: on-failure
     networks:
       - gp_network
-    depends_on:
-      - hadoop
-      - greenplum-primary1
     cap_add:
       - NET_ADMIN
     build:
       context: gp
       dockerfile: Dockerfile
-    user: "1280:1280"
     stdin_open: true
+    tty: true
     entrypoint:
       - "/bin/sh"
       - "-c"
-      - "./sbin/start-master.sh"
+      - "./sbin/ssh.sh"
     volumes:
       - "./gp/master:/home/gpadmin/data/master"
     environment:
@@ -53,12 +50,12 @@ services:
       - gp_network
     depends_on:
       - hadoop
+      - greenplum-master
     cap_add:
       - NET_ADMIN
     build:
       context: gp
       dockerfile: Dockerfile
-    user: "1280:1280"
     stdin_open: true
     entrypoint:
       - "/bin/sh"

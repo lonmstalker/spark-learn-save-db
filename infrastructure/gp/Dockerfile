@@ -20,16 +20,15 @@ RUN wget https://github.com/greenplum-db/gpdb/releases/download/${GREENPLUM_VERS
     && apt install -y ./greenplum-db-${GREENPLUM_VERSION}-${GREENPLUM_OS}.deb \
     && rm -f greenplum-db-${GREENPLUM_VERSION}-${GREENPLUM_OS}.deb
 
-USER $BUILD_USER
-ENV HOME=/home/$BUILD_USER
-WORKDIR /home/$BUILD_USER
-
 RUN useradd -m -N -s /bin/bash -u 1280 $BUILD_USER \
     && echo $BUILD_USER:$BUILD_USER | chpasswd \
     && usermod -aG sudo $BUILD_USER \
-    && adduser $BUILD_USER sudo \
     && chmod 0440 /etc/sudoers \
     && chmod g+w /etc/passwd
+
+USER $BUILD_USER
+ENV HOME=/home/$BUILD_USER
+WORKDIR /home/$BUILD_USER
 
 COPY /etc/hostfile_gpssh_segonly $HOME/hostfile_gpssh_segonly
 COPY /etc/hostfile_exkeys $HOME/hostfile_exkeys
