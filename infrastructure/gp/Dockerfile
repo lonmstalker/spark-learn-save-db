@@ -27,12 +27,13 @@ RUN useradd -m -N -s /bin/bash -u 1280 $BUILD_USER \
     && chmod g+w /etc/passwd
 
 USER $BUILD_USER
+ENV LOGNAME=$BUILD_USER
 ENV HOME=/home/$BUILD_USER
 WORKDIR /home/$BUILD_USER
 
-COPY /etc/hostfile_gpssh_segonly $HOME/hostfile_gpssh_segonly
-COPY /etc/hostfile_exkeys $HOME/hostfile_exkeys
-COPY /etc/gpinitsystem_config $HOME/gpinitsystem_config
+COPY /etc/hostfile_gpssh_segonly $HOME/etc/hostfile_gpssh_segonly
+COPY /etc/hostfile_exkeys $HOME/etc/hostfile_exkeys
+COPY /etc/gpinitsystem_config $HOME/etc/gpinitsystem_config
 
 COPY /sbin $HOME/sbin
 
